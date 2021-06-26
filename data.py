@@ -57,3 +57,15 @@ class Corpus(object):
 
         # return tokenized ids
         return ids
+
+
+def make_batch(data, batch_size, cuda):
+    # Work out how cleanly we can divide the dataset into bsz parts.
+    nbatch = data.size(0) // batch_size
+    # Trim off any extra elements that wouldn't cleanly fit (remainders).
+    data = data.narrow(0, 0, nbatch * batch_size)
+    # Evenly divide the data across the bsz batches.
+    data = data.view(batch_size, -1).t().contiguous()
+    if cuda:
+        data = data.cuda()
+    return data
