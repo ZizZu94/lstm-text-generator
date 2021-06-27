@@ -3,16 +3,15 @@ import time
 import math
 import torch
 import torch.nn as nn
-import numpy as np
-import matplotlib.pyplot as plt
 
 import data
 import model
+from utils import *
 
 parser = argparse.ArgumentParser(
     description='Language generation with RNN-LSTM')
 parser.add_argument('--embsize', type=int, default=650,
-                    help='size of word embeddings')
+                    help='size of word embeddings')  # 650
 parser.add_argument('--nhid', type=int, default=650,
                     help='number of hidden units per layer')
 parser.add_argument('--nlayers', type=int, default=2,
@@ -25,14 +24,12 @@ parser.add_argument('--batch_size', type=int, default=20, metavar='N',
                     help='batch size')
 parser.add_argument('--bptt', type=int, default=35,
                     help='sequence length')
-parser.add_argument('--dropout', type=float, default=0.5,
+parser.add_argument('--dropout', type=float, default=0.65,
                     help='dropout applied to layers (0 = no dropout)')
-parser.add_argument('--cuda', action='store_true',
-                    help='use CUDA')
 args = parser.parse_args()
 
 save_path = './weights/lstm-model-weights.net'
-args.cuda = True
+has_cuda = True
 
 ##################### LOAD DATA FROM FILES #########################
 
@@ -54,9 +51,9 @@ print('| Finished loading data')
 print('=' * 90)
 
 eval_batch_size = 10
-train_data = data.make_batch(corpus.train, args.batch_size, args.cuda)
-val_data = data.make_batch(corpus.valid, eval_batch_size, args.cuda)
-test_data = data.make_batch(corpus.test, eval_batch_size, args.cuda)
+train_data = data.make_batch(corpus.train, args.batch_size, has_cuda)
+val_data = data.make_batch(corpus.valid, eval_batch_size, has_cuda)
+test_data = data.make_batch(corpus.test, eval_batch_size, has_cuda)
 
 
 ##################### CREATE MODEL #########################
@@ -65,7 +62,7 @@ vocab_num = len(corpus.dictionary)
 model = model.LSTMModel(vocab_num, args.embsize,
                         args.nhid, args.nlayers, args.dropout)
 
-if args.cuda:
+if has_cuda:
     model.cuda()
 else:
     model.cpu()
@@ -78,7 +75,7 @@ print('=' * 90)
 print('\n')
 
 criterion = nn.CrossEntropyLoss()
-if args.cuda:
+if has_cuda:
     criterion.cuda()
 
 ##################### TRAINING #########################
@@ -228,30 +225,5 @@ print('| End of training | test loss {:5.2f} | test ppl {:8.2f}'.format(
 print('=' * 90)
 
 # show plots
-
-
-def draw_result(lst_iter, lst_loss, lst_ppl, title):
-    fig, (ax1, ax2) = plt.subplots(2)
-    fig.suptitle(title)
-
-    ax1.plot(lst_iter, lst_loss, '-b', label='loss')
-    ax2.plot(lst_iter, lst_ppl, '-r', label='perplexity')
-
-    ax1.set_xlabel("epoch")
-    ax1.set_ylabel("loss")
-    ax1.legend(loc='upper right')
-
-    ax2.set_xlabel("epoch")
-    ax2.set_ylabel("perplexity")
-    ax2.legend(loc='upper right')
-    # plt.title(title)
-
-    # save image
-    fig.savefig(title+".png")  # should before show method
-
-    # show
-    fig.show()
-
-
 draw_result(epoch_list, train_loss_list, train_ppl_list, 'Train')
 draw_result(epoch_list, val_loss_list, val_ppl_list, 'Validation')

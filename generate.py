@@ -12,12 +12,10 @@ parser.add_argument('--save_path', type=str, default='/model/model.pt',
                     help='folder where we save pretained model weights')
 parser.add_argument('--words', type=int, default='1000',
                     help='number of words to generate')
-parser.add_argument('--cuda', action='store_true',
-                    help='use CUDA')
 parser.add_argument('--temperature', type=float, default=1.0,
                     help='temperature - higher will increase diversity')
 args = parser.parse_args()
-args.cuda = True
+has_cuda = True
 
 if args.temperature < 1e-3:
     parser.error("--temperature has to be greater or equal 1e-3")
@@ -75,7 +73,7 @@ def sample(net, size, prime='it is'):
     net.eval()
 
     # push to GPU
-    if args.cuda:
+    if has_cuda:
         net.cuda()
     else:
         net.cpu()
@@ -94,7 +92,7 @@ def sample(net, size, prime='it is'):
 
         with torch.no_grad():
             inp = torch.from_numpy(idx).long()
-        if args.cuda:
+        if has_cuda:
             inp.data = inp.data.cuda()
 
         word_idx, h = predict(net, inp, h)
@@ -104,7 +102,7 @@ def sample(net, size, prime='it is'):
     # input: next word of the input words
     with torch.no_grad():
         input = torch.tensor([[word_idx]]).long()
-    if args.cuda:
+    if has_cuda:
         input.data = input.data.cuda()
 
     # predict subsequent tokens and write in the output file
