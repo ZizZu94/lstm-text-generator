@@ -75,5 +75,9 @@ optional arguments:
 
 With these arguments, a text can be generated.
 
+```bash
+python generate.py --words 2000
+```
+
 For any questions, do not hesitate to contact me or open an issue! :point_down::point_down::point_down::point_down::point_down::mega:  
 zihadul.azam@studenti.unitn.it
