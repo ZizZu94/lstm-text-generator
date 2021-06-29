@@ -23,7 +23,7 @@ def draw_result(lst_iter, lst_loss, lst_ppl, title):
     ax2.annotate(last_value, (lst_iter[-1], lst_ppl[-1]))
 
     # save image
-    fig.savefig(title+".png")
+    fig.savefig('plots/' + title + '.png')
 
     # show
     plt.show()

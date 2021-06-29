@@ -23,7 +23,6 @@ class LSTMModel(nn.Module):
             hidden_size=self.hidden_size,
             num_layers=self.num_layers,
             dropout=self.dropout_prob,
-            # batch_first = True
         )
 
         # dropout
@@ -46,19 +45,15 @@ class LSTMModel(nn.Module):
 
     def forward(self, input, hidden):
         emb = self.dropout(self.emb_layer(input))
-
         output, hidden = self.lstm(emb, hidden)
-
         output = self.dropout(output)
 
         output_reshaped = output.view(
             output.size(0)*output.size(1), output.size(2))
-        #output = output.reshape(-1, output.size(2))
 
         fc_out = self.fc_layer(output_reshaped)
 
         return fc_out, hidden
-        # return output, hidden
 
     def init_hidden(self, batch_size):
         weight = next(self.parameters()).data

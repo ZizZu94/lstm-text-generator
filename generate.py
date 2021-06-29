@@ -5,11 +5,9 @@ import numpy as np
 
 import data
 
-parser = argparse.ArgumentParser(description='PyTorch PTB Language Model')
+parser = argparse.ArgumentParser(description='Text generation with RNN-LSTM')
 
 # Model parameters.
-parser.add_argument('--save_path', type=str, default='/model/model.pt',
-                    help='folder where we save pretained model weights')
 parser.add_argument('--words', type=int, default='1000',
                     help='number of words to generate')
 parser.add_argument('--temperature', type=float, default=1.0,

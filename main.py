@@ -9,22 +9,22 @@ import model
 from utils import *
 
 parser = argparse.ArgumentParser(
-    description='Language generation with RNN-LSTM')
+    description='Text generation with RNN-LSTM')
 parser.add_argument('--embsize', type=int, default=650,
-                    help='size of word embeddings')  # 650
+                    help='size of word embeddings')
 parser.add_argument('--nhid', type=int, default=650,
                     help='number of hidden units per layer')
 parser.add_argument('--nlayers', type=int, default=2,
                     help='number of layers')
 parser.add_argument('--lr', type=float, default=20,
                     help='initial learning rate')
-parser.add_argument('--epochs', type=int, default=40,
+parser.add_argument('--epochs', type=int, default=30,
                     help='upper epoch limit')
 parser.add_argument('--batch_size', type=int, default=20, metavar='N',
                     help='batch size')
 parser.add_argument('--bptt', type=int, default=35,
                     help='sequence length')
-parser.add_argument('--dropout', type=float, default=0.65,
+parser.add_argument('--dropout', type=float, default=0.5,
                     help='dropout applied to layers (0 = no dropout)')
 args = parser.parse_args()
 
@@ -108,8 +108,8 @@ def evaluate(data_source):
             data, targets = get_batch(data_source, i)
             output, hidden = model(data, hidden)
             # model input and output
-            # inputdata size(bptt, bsz), and size(bptt, bsz, embsize) after embedding
-            # output size(bptt*bsz, ntoken)
+            # inputdata has size = size(bptt, bsz), and size(bptt, bsz, embsize) after embedding
+            # output has size = size(bptt*bsz, ntoken)
             total_loss += len(data) * criterion(output, targets).data
             hidden = repackage_hidden(hidden)
 
@@ -182,12 +182,12 @@ try:
         epoch_start_time = time.time()
         epoch_list.append(epoch)
 
-        # train
+        ############ TRAIN #############
         epoch_loss, epoch_ppl = train()
         train_loss_list.append(epoch_loss)
         train_ppl_list.append(epoch_ppl)
 
-        # validation
+        ########### VALIDATION #############
         val_loss, val_ppl = evaluate(val_data)
         val_loss_list.append(val_loss)
         val_ppl_list.append(val_ppl)
