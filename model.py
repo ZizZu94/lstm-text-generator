@@ -17,6 +17,7 @@ class LSTMModel(nn.Module):
             self.vocab_num,
             self.emb_dim
         )
+
         # lstm layer
         self.lstm = nn.LSTM(
             input_size=self.emb_dim,
@@ -29,6 +30,7 @@ class LSTMModel(nn.Module):
         self.dropout = nn.Dropout(
             dropout_prob
         )
+
         # fully connected layer
         self.fc_layer = nn.Linear(
             self.hidden_size,
